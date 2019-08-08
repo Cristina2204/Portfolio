@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="img/cropped-favicon-192x192.png" />
+    <title>Platforma intercativa pentru dezvoltarea creativa a copilului</title>
+
+    <link rel='stylesheet' href='css/font-awesome.css' type='text/css' media='all' />
+    <link rel='stylesheet' href='css/jquery.fancybox.css' type='text/css' media='all' />
+    <link rel='stylesheet' href='css/select2.css' type='text/css' media='all' />
+    <link rel='stylesheet' href='css/animate.css' type='text/css' media='all' />
+    <link rel='stylesheet' href='css/main.css' type='text/css' media='all' />
+    <link rel='stylesheet' href='css/shop.css' type='text/css' media='all' />
+    <script type='text/javascript' src='js/jquery.js'></script>
+    <script type='text/javascript' src='js/jquery-migrate.min.js'></script>
+    <link rel='stylesheet' href='tuner/style.css' type='text/css' media='all' />
+    <link rel="icon" href="img/cropped-favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" href="img/cropped-favicon-192x192.png" sizes="192x192" />
+    <link rel="apple-touch-icon-precomposed" href="img/cropped-favicon-180x180.png">
+    <meta name="msapplication-TileImage" content="img/cropped-favicon-270x270.png">
+
+    <title>Chestionar 2</title>
+  
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+  
+    var quiztitle = "Sa raspundem la intrebari";
+
+    
+    var quiz = [
+        
+
+     {"question"      :   "Q1:  Care este mâncarea preferată a urşilor panda?",
+            "image"         :   "panda.png",
+            "choices"       :   [
+                                    "eucalipt",
+                                    "bambus",
+                                    "fructe",
+                                    "legume"
+                                ],
+            "correct"       :   "bambus",
+            "explanation"   :   "",
+        },
+        {
+            "question"      :   "Q2: Ce substanţă dulce produc albinele?",
+            "image"         :   "albina.png",
+            "choices"       :   [
+                                    "miere",
+                                    "zahar",
+                                    "suc",
+                                    "polen"
+                                ],
+            "correct"       :   "miere",
+            "explanation"   :   "",
+        },
+
+{
+            "question"      :   "Q3: Ce ţară este considerată patria cangurilor?",
+            "image"         :   "kango.jpg",
+            "choices"       :   [
+                                    
+                                    "America de Sud",
+                                    "Thailanda",
+                                    "Australia",
+                                    "India"
+                                ],
+            "correct"       :   "Australia",
+            "explanation"   :   "",
+        },
+
+
+   {"question"      :   "Q4: Câte picioare are un păianjen?",
+            "image"         :   "paianjen.jpg",
+            "choices"       :   [
+                                    "12",
+                                    "4",
+                                    "6",
+                                    "8"
+                                ],
+            "correct"       :   "8",
+            "explanation"   :   "",
+        },
+
+
+
+{"question"      :   "Q5: Pe ce continent se află Egiptul?",
+            "image"         :   "egipt.jpg",
+            "choices"       :   [
+                                    "Asia",
+                                    "Europa",
+                                    "Africa",
+                                    "America de Nord"
+                                ],
+            "correct"       :   "Africa",
+            "explanation"   :   "",
+        },
+{"question"      :   "Q6: Câte inele are planeta Saturn?.",
+            "image"         :   "saturn.jpg",
+            "choices"       :   [
+                                    "2",
+                                    "1",
+                                    "5",
+                                    "7"
+                                ],
+            "correct"       :   "7",
+            "explanation"   :   "",
+        },
+
+{"question"      :   "Q7: Câţi metri pătraţi sunt într-un hectar?",
+            "image"         :   "metri.png",
+            "choices"       :   [
+                                    "1.000",
+                                    "10.000",
+                                    "100",
+                                    "100.000"
+                                ],
+            "correct"       :   "10.000",
+            "explanation"   :   "",
+        },
+
+{"question"      :   "Q8: Ce ţară are capitala la Santiago?",
+            "image"         :   "glob.png",
+            "choices"       :   [
+                                    "Spania",
+                                    "Maroc",
+                                    "Chile",
+                                    "Lituania"
+                                ],
+            "correct"       :   "Chile",
+            "explanation"   :   "",
+        },
+        {
+            "question"      :   "Q9:Care este mai greu, un kilogram de pene sau un kilogram de plumb?",
+            "image"         :   "balanta.png.",
+            "choices"       :   [
+                                    "penele",
+                                    "plumbul",
+                                    "aurul",
+                                    "niciuna"
+                                ],
+            "correct"       :   "aurul",
+            "explanation"   :   "Aurul este un metal pretios ,si se regaeste printre cele mai grele metale, mai greu decat plumbul.",
+        },
+        {
+            "question"      :   "Q10:  Care sunt cele trei culori primare?",
+            "image"         :   "culori.png",
+            "choices"       :   [
+                                    "rosu,verde,albastru",
+                                    "portocaliu,mov,albastru",
+                                    "rosu,galben,albastru",
+                                    "rosu,galben,verde"
+                                ],
+            "correct"       :   "rosu,galben,albastru",
+            "explanation"   :   "",
+        },
+
+
+
+    ];
+
+
+    
+    var currentquestion = 0, score = 0, submt=true, picked;
+
+    jQuery(document).ready(function($){
+
+      
+        function htmlEncode(value){
+          return $(document.createElement('div')).text(value).html();
+        }
+
+        
+        function addChoices(choices){
+            if(typeof choices !== "undefined" && $.type(choices) == "array"){
+                $('#choice-block').empty();
+                for(var i=0;i<choices.length; i++){
+                    $(document.createElement('li')).addClass('choice choice-box').attr('data-index', i)
+                    .text(choices[i]).appendTo('#choice-block');                    
+                }
+            }
+        }
+        
+        
+        function nextQuestion(){
+            submt = true;
+            $('#explanation').empty();
+            $('#question').text(quiz[currentquestion]['question']);
+            $('#pager').text('Question ' + Number(currentquestion + 1) + ' of ' + quiz.length);
+            if(quiz[currentquestion].hasOwnProperty('image') && quiz[currentquestion]['image'] != ""){
+                if($('#question-image').length == 0){
+                    $(document.createElement('img')).addClass('question-image').attr('id', 'question-image')
+                    .attr('src', quiz[currentquestion]['image']).attr('alt', htmlEncode(quiz[currentquestion]['question'])).insertAfter('#question');
+                } else {
+                    $('#question-image').attr('src', quiz[currentquestion]['image']).attr('alt', htmlEncode(quiz[currentquestion]['question']));
+                }
+            } else {
+                $('#question-image').remove();
+            }
+            addChoices(quiz[currentquestion]['choices']);
+            setupButtons();
+        }
+
+        
+        function processQuestion(choice){
+            if(quiz[currentquestion]['choices'][choice] == quiz[currentquestion]['correct']){
+                $('.choice').eq(choice).css({'background-color':'#50D943'});
+                $('#explanation').html('<strong>Correct!</strong> ' + htmlEncode(quiz[currentquestion]['explanation']));
+                score++;
+            } else {
+                $('.choice').eq(choice).css({'background-color':'#D92623'});
+                $('#explanation').html('<strong>Incorrect.</strong> ' + htmlEncode(quiz[currentquestion]['explanation']));
+            }
+            currentquestion++;
+            $('#submitbutton').html('Urmatoarea intrebare &raquo;').on('click', function(){
+                if(currentquestion == quiz.length){
+                    endQuiz();
+                } else {
+                    $(this).text('Verifica raspunsul').css({'color':'#222'}).off('click');
+                    nextQuestion();
+                }
+            })
+        }
+
+      
+        function setupButtons(){
+            $('.choice').on('mouseover', function(){
+                $(this).css({'background-color':'#e1e1e1'});
+            });
+            $('.choice').on('mouseout', function(){
+                $(this).css({'background-color':'#fff'});
+            })
+            $('.choice').on('click', function(){
+                picked = $(this).attr('data-index');
+                $('.choice').removeAttr('style').off('mouseout mouseover');
+                $(this).css({'border-color':'#222','font-weight':700,'background-color':'#c1c1c1'});
+                if(submt){
+                    submt=false;
+                    $('#submitbutton').css({'color':'#000'}).on('click', function(){
+                        $('.choice').off('click');
+                        $(this).off('click');
+                        processQuestion(picked);
+                    });
+                }
+            })
+        }
+        
+        
+        function endQuiz(){
+            $('#explanation').empty();
+            $('#question').empty();
+            $('#choice-block').empty();
+            $('#submitbutton').remove();
+            $('#question').text("Ai raspuns la" + score + " din " + quiz.length + " corect.");
+            $(document.createElement('h2')).css({'text-align':'center', 'font-size':'4em'}).text(Math.round(score/quiz.length * 100) + '%').insertAfter('#question');
+        }
+
+        
+        function init(){
+            //adaugare titlu
+            if(typeof quiztitle !== "undefined" && $.type(quiztitle) === "string"){
+                $(document.createElement('h1')).text(quiztitle).appendTo('#frame');
+            } else {
+                $(document.createElement('h1')).text("Intrebarea ").appendTo('#frame');
+            }
+
+            //adaugare intrebari
+            if(typeof quiz !== "undefined" && $.type(quiz) === "array"){
+               
+                $(document.createElement('p')).addClass('pager').attr('id','pager').text('Intrebarea 1 din' + quiz.length).appendTo('#frame');
+                //adaugare prima intrebare
+                $(document.createElement('h2')).addClass('question').attr('id', 'question').text(quiz[0]['question']).appendTo('#frame');
+                //adaugare imagine
+                if(quiz[0].hasOwnProperty('image') && quiz[0]['image'] != ""){
+                    $(document.createElement('img')).addClass('question-image').attr('id', 'question-image').attr('src', quiz[0]['image']).attr('alt', htmlEncode(quiz[0]['question'])).appendTo('#frame');
+                }
+                $(document.createElement('p')).addClass('explanation').attr('id','explanation').html('&nbsp;').appendTo('#frame');
+            
+       
+                $(document.createElement('ul')).attr('id', 'choice-block').appendTo('#frame');
+            
+                //adauga variante raspuns
+                addChoices(quiz[0]['choices']);
+            
+                //adaugare buton-verifica
+                $(document.createElement('div')).addClass('choice-box').attr('id', 'submitbutton').text('Verifica').css({'font-weight':700,'color':'#222','padding':'30px 0'}).appendTo('#frame');
+            
+                setupButtons();
+            }
+        }
+        
+        init();
+    });
+    </script>
+    <style type="text/css" media="all">
+        /*css reset */
+        html,body,div,span,h1,h2,h3,h4,h5,h6,p,code,small,strike,strong,sub,sup,b,u,i{border:0;font-size:100%;font:inherit;vertical-align:baseline;margin:0;padding:0;} 
+        article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block;} 
+        body{line-height:1; font:normal 0.9em/1em "Helvetica Neue", Helvetica, Arial, sans-serif;} 
+        ol,ul{list-style:none;}
+        strong{font-weight:700;}
+        #frame{max-width:1200px;width:auto;border:0.3px solid #ccc;background:#fff;padding:30px;margin:3px;}
+        h1{font:normal bold 2em/1.8em "Helvetica Neue", Helvetica, Arial, sans-serif;text-align:left;padding:0;width:auto}
+        h2{font:italic bold 1.3em/1.2em "Helvetica Neue", Helvetica, Arial, sans-serif;padding:0;text-align:center;margin:20px 0;}
+        p.pager{margin:5px 0 5px; font:bold 1em/1em "Helvetica Neue", Helvetica, Arial, sans-serif;color:#999;}
+        img.question-image{display:block;max-width:250px;margin:10px auto;border:1px solid #ccc;width:200%;height:auto;}
+        #choice-block{display:block;list-style:none;margin:0;padding:0;}
+        #submitbutton{background:#5a6b8c;}
+        #submitbutton:hover{background:#7b8da6;}
+        #explanation{margin:0 auto;padding:20px;width:75%;}
+        .choice-box{display:block;text-align:center;margin:8px auto;padding:10px 0;border:1px solid #666;cursor:pointer;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;}
+    </style>
+</head>
+
+   
+<body class="home page wide wave-style">
+    <div class="page">
+        <!-- top panel -->
+        <div class='site_top_panel wave slider'>
+            <!-- canvas -->
+            <div class='top_half_sin_wrapper'>
+                <canvas class='top_half_sin' data-bg-color='#ffffff' data-line-color='#ffffff'></canvas>
+            </div>
+            <!-- / canvas -->
+            <div class='container'>
+                <div class='row_text_search'>
+                    <div id='top_panel_text'><a href=""><i class=""></i> </a>;
+                        <a href="mailto:mail@mail.com"> <i class=""></i></a>
+                    </div>
+                    <form method="get" class="search-form" action="#">
+                        
+                    </form>
+                </div>
+                <div id='top_panel_links'>
+                    <div class='search_icon'></div>
+                    <div id='top_social_links_wrapper'>
+                        <div class='share-toggle-button'><i class='share-icon fa fa-share-alt'></i></div>
+                        <div class='cws_social_links'><a href='http://twitter.com/' class='cws_social_link' title='Twitter'><i class='share-icon fa fa-twitter'></i></a><a href='http://facebook.com/' class='cws_social_link' title='Facebook'><i class='share-icon fa fa-facebook'></i></a></div>
+                    </div>
+                    
+                    <div class="lang_bar">
+                       
+                    </div>
+                </div>
+                <div class="site_top_panel_toggle"></div>
+                 <div class="login-container">
+   
+      
+    </form>
+  </div>
+
+            </div>
+        </div>
+        <!-- / top panel -->
+        <!-- header container -->
+        <div class='header_cont'>
+            <div class='header_mask'>
+                <div class='header_pattern'></div>
+                <div class='header_img'></div>
+            </div>
+            <header class='site_header logo-in-menu' data-menu-after="3">
+                <div class="header_box">
+                    <div class="container">
+                        <!-- logo -->
+                        <div class="header_logo_part with_border" role="banner">
+                            <a class="logo" href="index-2.html"><img src='img/logo.png' data-at2x='img/logo.png' alt /></a>
+                        </div>
+                        <!-- / logo -->
+                        <!-- menu -->
+                        <div class="header_nav_part">
+                            <nav class="main-nav-container a-right">
+                                <div class="mobile_menu_header">
+                                    <i class="mobile_menu_switcher"><span></span><span></span><span></span></i>
+                                </div>
+                                <ul id="menu-main-menu" class="main-menu menu-bees">
+                                    <!-- menu item -->
+                                    
+                                    <!-- / menu item -->
+                                    <!-- menu item -->
+                                
+                                    <ul id="menu-main-menu" class="main-menu menu-bees">
+                                        <!-- menu item -->
+                                        <li class="menu-item current-menu-item page_item current_page_item current-menu-ancestor current-menu-parent current_page_parent current_page_ancestor menu-item-has-children bees-start">
+                                            <a href="index-2.html">
+                                                <div class="bees bees-start"><span></span>
+                                                    <div class="line-one"></div>
+                                                    <div class="line-two"></div>
+                                                </div>Home
+                                                <div class="canvas_wrapper">
+                                                    <canvas class="menu_dashed"></canvas>
+                                                </div>
+                                            </a>
+                                            <span class='button_open'></span>
+                                            
+                                        </li>
+                                        <!-- / menu item -->
+                                        <!-- menu item -->
+                                        <li class="menu-item menu-item-has-children"><a href="jocuri.html">Jocuri<div class="canvas_wrapper"><canvas class="menu_dashed"></canvas></div></a>
+                                            <span class='button_open'></span>
+                                            <ul class="sub-menu">
+                                                <li class="menu-item back"><a href="#"><em>←</em>&nbsp;BACK</a>
+                                                </li>
+                                                <li class="menu-item"><a href="jocuri cu masini.html">Jocuri cu masini</a></li>
+                                                
+                                                <li class="menu-item"><a href="jocuri diverse.htmll">Jocuri diverse</a></li>
+                                                
+                                                    <span class='button_open'></span>
+                                                    <ul class="sub-menu">
+                                                        <li class="menu-item back"><a href="#"><em>←</em>&nbsp;BACK</a>
+                                                        </li>
+                                                       
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <!-- / menu item -->
+                                        <!-- menu item -->
+                                        <li class="menu-item menu-item-has-children"><a href="page-about-us.html">Stiati ca?<div class="canvas_wrapper"><canvas class="menu_dashed"></canvas></div></a>
+                                            <span class='button_open'></span>
+                                            <ul class="sub-menu">
+                                                <li class="menu-item back"><a href="#"><em>←</em>&nbsp;BACK</a>
+                                                </li>
+                                                <li class="menu-item"><a href="animale.html">Animale</a></li>
+                                                <li class="menu-item"><a href="stiinta.html">Stiinta</a></li>
+                                        
+                                            </ul>
+                                        </li>
+                                        <!-- / menu item -->
+                                        <!-- menu item -->
+                                        <li class="menu-item menu-item-has-children right"><a href="portfolio-four-columns.html">Chestionare<div class="canvas_wrapper"><canvas class="menu_dashed"></canvas></div></a>
+                                            <span class='button_open'></span>
+                                            <ul class="sub-menu">
+                                                <li class="menu-item back"><a href="#"><em>←</em>&nbsp;BACK</a>
+                                                </li>
+                                                <li class="menu-item"><a href="c1.html">Test 1</a></li>
+                                                <li class="menu-item"><a href="c2.html">Test 2</a></li>
+                                              
+                                                
+                                            </ul>
+                                        </li>
+                                        <!-- / menu item -->
+                                        <!-- menu item -->
+                                        <li class="menu-item menu-item-has-children right"><a href="blog.html">Blog<div class="canvas_wrapper"><canvas class="menu_dashed"></canvas></div></a>
+                                            
+                                        </li>
+                                        <!-- / menu item -->
+                                        <!-- menu item -->
+                                        <li class="menu-item right bees-end">
+                                            <a href="contact.html">
+                                                <div class="bees bees-end"><span></span>
+                                                    <div class="line-one"></div>
+                                                    <div class="line-two"></div>
+                                                </div>Contact
+                                                <div class="canvas_wrapper">
+                                                    <canvas class="menu_dashed"></canvas>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <!-- / menu item -->
+                                    </ul>
+                                </nav>
+                            </div>
+                            <!-- / menu -->
+                        </div>
+                    </div>
+                </header>
+            <!-- #masthead -->
+        </div>
+        <!-- breadcrumbs -->
+        <section class='page_title wave'>
+            <div class='container'>
+                <div class='title'>
+                    <h1>Chestionare </h1></div>
+                <nav class="bread-crumbs"><a href="index-2.html" >Acasa</a><i class="delimiter fa fa-chevron-right"></i><span class="current">Chestionare</span></nav>
+                <!-- .breadcrumbs -->
+            </div>
+            <canvas class='breadcrumbs' data-bg-color='#f8f2dc' data-line-color='#f9e8b2'></canvas>
+        </section>
+
+
+
+ <div id="main" class="site-main">
+            <div class="page_content">
+                <!-- pattern container / -->
+                <div class='left-pattern pattern pattern-2'></div>
+                <main>
+                    <!-- content section -->
+                    
+                    <div class='grid_row clearfix'>
+                        <div class='grid_col grid_col_2'>
+
+                    </div>
+                        <div class='grid_col grid_col_6'>
+                            <div class='ce clearfix'>
+                                
+
+                                <!-- FRAME pentru QUIZ-->
+                                 <center> <div id="frame" role="content"></div>  <center>
+
+                                    <p>&nbsp;</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- accordion -->
+                        <div class='grid_col grid_col_4'>
+                           
+                    </div>
+                   
+                </main>
+                <!-- pattern section / -->
+                <div class='right-pattern pattern pattern-2'></div>
+                <!-- footer container image / -->
+                <div class="footer_image"></div>
+            </div>
+            <!-- svg filter -->
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="0" style='display:none;'>
+                <defs>
+                    <filter id="goo">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
+                        <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+                        <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+                    </filter>
+                </defs>
+            </svg>
+            <!-- / svg filter -->
+        </div>
+
+
+        <!-- breadcrumbs / -->
+        <!-- main container -->
+    
+        <!-- #main -->
+        <!-- footer -->
+          <div class='footer_wrapper_copyright'>
+            <!-- canvas -->
+            <div class='half_sin_wrapper'>
+                <canvas class='half_sin' data-bg-color='23,108,129' data-line-color='23,108,129'></canvas>
+            </div>
+            <!-- / canvas -->
+            <footer class='page_footer'>
+                <div class='container'>
+                    <div class='footer_container'>
+                        <!-- widget post -->
+                        <div class="cws-widget">
+                            <div class="widget-title">Jocuri noi</div>
+                            <div class='widget_carousel'>
+                                <div class='item'>
+                                    <!-- post item -->
+                                    <div class='post_item'>
+                                        <div class='post_preview clearfix'>
+                                            <a href='blog-post.html' class='post_thumb_wrapp pic'><img class='post_thumb' src='pic/bfi_thumb/58x58-portfolio_7-304vqm0b4ukllinncov4ei.jpg' data-at2x='pic/bfi_thumb/58x58-portfolio_7-304vqm0b4ukllinncov4ei@2x.jpg' alt />
+                                                <div class='hover-effect'></div>
+                                                <div class='links'><span class='fa fa-link'></span></div>
+                                            </a>
+                                            <div class='post_title'><a href='blog-post.html'>Joc cu masini</a></div>
+                                            <div class='post_content'> <a href='blog-post.html'>...</a></div>
+                                            <div class='post_date'>March 24, 2019</div>
+                                        </div>
+                                    </div>
+                                    <!-- / post item -->
+                                    <!-- post item -->
+                                    <div class='post_item'>
+                                        <div class='post_preview clearfix'>
+                                            <a href='blog-post.html' class='post_thumb_wrapp pic'><img class='post_thumb' src='pic/bfi_thumb/58x58-blog_3_col_3-304vqj49s4b9oehlhrm1hm.jpg' data-at2x='pic/bfi_thumb/58x58-blog_3_col_3-304vqj49s4b9oehlhrm1hm@2x.jpg' alt />
+                                                <div class='hover-effect'></div>
+                                                <div class='links'><span class='fa fa-link'></span></div>
+                                            </a>
+                                            <div class='post_title'><a href='blog-post.html'>Hexagon </a></div>
+                                            <div class='post_content'> <a href='blog-post.html'>...</a></div>
+                                            <div class='post_date'>March 17, 2019</div>
+                                        </div>
+                                    </div>
+                                    <!-- / post item -->
+                                    <!-- post item -->
+                                    <div class='post_item'>
+                                        <div class='post_preview clearfix'>
+                                            <a href='blog-post.html' class='post_thumb_wrapp pic'><img class='post_thumb' src='pic/bfi_thumb/58x58-portfolio_4-304vqkvlk7rwl2xsvw77yi.jpg' data-at2x='pic/bfi_thumb/58x58-portfolio_4-304vqkvlk7rwl2xsvw77yi@2x.jpg' alt />
+                                                <div class='hover-effect'></div>
+                                                <div class='links'><span class='fa fa-link'></span></div>
+                                            </a>
+                                            <div class='post_title'><a href='blog-post.html'>Joc cu animale</a></div>
+                                            <div class='post_content'> <a href='blog-post.html'>...</a></div>
+                                            <div class='post_date'>April 2, 2019</div>
+                                        </div>
+                                    </div>
+                                </div>
+                               
+                            </div>
+                        </div>
+                        <!-- / widget post -->
+                        <!-- twitter -->
+                        <div class="cws-widget">
+                            <div class="widget-title"></div>
+                            <div class='cws_tweets tweets_carousel paginated'>
+                                <div class='twitter-carousel cws_tweet'></div>
+                            </div>
+                        </div>
+                        <!-- / twitter -->
+                        <!-- widget gallery -->
+                        <div class="cws-widget">
+                            <div class="widget-title">Poze</div>
+                            <div class='cws_textwidget_content'>
+                                <div class='text'>
+                                    <div id='gallery-2' class='gallery galleryid-2288 gallery-columns-3 gallery-size-thumbnail'>
+                                        <!-- gallery item -->
+                                        <div class='gallery-item'>
+                                            <div class='gallery-icon landscape'>
+                                                <img width="150" height="150" src="casa.png" class="attachment-thumbnail" alt="blog_3_col_2" />
+                                            </div>
+                                        </div>
+                                        <!-- / galery item -->
+                                        <!-- galery item -->
+                                        <div class='gallery-item'>
+                                            <div class='gallery-icon landscape'>
+                                                <img width="150" height="150" src="hexagon.png" class="attachment-thumbnail" alt="blog_3_col_1" />
+                                            </div>
+                                        </div>
+                                        <!-- / galery item -->
+                                        <!-- galery item -->
+                                        <div class='gallery-item'>
+                                            
+                                        </div>
+                                        <br style="clear: both" />
+                                        <div class='gallery-item'>
+                                            <div class='gallery-icon landscape'>
+                                                <img width="150" height="150" src="Joc 1 -masini.PNG" class="attachment-thumbnail" alt="pic_typorgaphy" />
+                                            </div>
+                                        </div>
+                                        <!-- / galery item -->
+                                        <!-- galery item -->
+                                        <div class='gallery-item'>
+                                            
+                                        </div>
+                                        <!-- / galery item -->
+                                        <!-- galery item -->
+                                        <div class='gallery-item'>
+                                            
+                                        </div>
+                                        <br style="clear: both" />
+                                        <div class='gallery-item'>
+                                            
+                                        </div>
+                                        <!-- / galery item -->
+                                        <!-- galery item -->
+                                        <div class='gallery-item'>
+                                            
+                                        </div>
+                                        <!-- / galery item -->
+                                        <!-- galery item -->
+                                        <div class='gallery-item'>
+                                            
+                                        </div>
+                                        <!-- / gallery item -->
+                                        <br style="clear: both" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- / widget gallery -->
+                        <!-- conatact form -->
+                        <div class="cws-widget">
+                            <div class="widget-title">Lasa un mesaj</div>
+                            <div class="textwidget">
+                                <div role="form" class="cf" id="cf-f1705-o1" lang="en-US" dir="ltr">
+                                    <!-- <div class="screen-reader-response"></div> -->
+                                    <form class="contactfor.php" action="contactform.php" method ="post">
+                                    <input type="text" name="name"placeholder="Full name">
+                                    <br>
+
+                                    <input type="text" name="mail" placeholder="Your e-mail">
+                                    <br>
+
+                                    <input type="text" name="subject" placeholder="Subject">
+                                    <br>
+                                    <textarea name="message" placeholder="Message"></textarea>
+                                    <br>
+                                    <button type="submit" anme="submit">Trimite</button>
+                                </form>
+                                    <div class="email_server_responce"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- / contact form -->
+                    </div>
+                </div>
+            </footer>
+            <!-- copyright -->
+            <div class='copyrights_area'>
+                <!-- canvas -->
+                <div class='half_sin_wrapper'>
+                    <canvas class='footer_half_sin' data-bg-color='14,64,77' data-line-color='14,64,77'></canvas>
+                </div>
+                <!-- / canvas -->
+                <div class='container'>
+                    <div class='copyrights_container'>
+                        
+                        <div class='copyrights_panel'>
+                            <div class='copyrights_panel_wrapper'>
+                                <div class="lang_bar">
+                                   
+                                </div>
+                                <div class='cws_social_links'><a href='http://twitter.com/' class='cws_social_link' title='Twitter'><i class='share-icon fa fa-twitter'></i></a><a href='http://facebook.com/' class='cws_social_link' title='Facebook'><i class='share-icon fa fa-facebook'></i></a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- / copyright -->
+        </div>
+    </div>
+    <!-- #page -->
+    <div class='scroll_top animated'></div>
+    <div id="lang_sel_footer">
+        <ul>
+            <li>
+                <a href="features-benefits.html" class="lang_sel_sel"><img src="img/en.png" alt="English" class="iclflag" title="English" />&nbsp;English</a>
+            </li>
+            <li>
+                <a href="#"><img src="img/fr.png" alt="Français" class="iclflag" title="Français" />&nbsp;Français</a>
+            </li>
+            <li>
+                <a href="#"><img src="img/de.png" alt="Deutsch" class="iclflag" title="Deutsch" />&nbsp;Deutsch</a>
+            </li>
+        </ul>
+    </div>
+    <script type='text/javascript' src='tuner/tuner/js/colorpicker.js'></script>
+    <script type='text/javascript' src='tuner/tuner/js/scripts.js'></script>
+    <script type='text/javascript' src='js/retina_1.3.0.js'></script>
+    <script type='text/javascript' src='js/modernizr.js'></script>
+    <script type='text/javascript' src='js/owl.carousel.js'></script>
+    <script type='text/javascript' src='js/TweenMax.min.js'></script>
+    <script type='text/javascript' src='js/jquery.isotope.min.js'></script>
+    <script type='text/javascript' src='js/jquery.fancybox.js'></script>
+    <script type='text/javascript' src='js/select2.min.js'></script>
+    <script type='text/javascript' src='js/wow.min.js'></script>
+    <script type='text/javascript' src='js/jquery.validate.min.js'></script>
+    <script type='text/javascript' src="js/jquery.form.min.js"></script>
+    <script type='text/javascript' src='js/scripts.js'></script>
+    <script type='text/javascript' src="js/jquery.tweet.js"></script>
+</body>
+
+
+</html>

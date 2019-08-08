@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="img/cropped-favicon-192x192.png" />
+    <title>Platforma intercativa pentru dezvoltarea creativa a copilului</title>
+
+    <link rel='stylesheet' href='css/font-awesome.css' type='text/css' media='all' />
+    <link rel='stylesheet' href='css/jquery.fancybox.css' type='text/css' media='all' />
+    <link rel='stylesheet' href='css/select2.css' type='text/css' media='all' />
+    <link rel='stylesheet' href='css/animate.css' type='text/css' media='all' />
+    <link rel='stylesheet' href='css/main.css' type='text/css' media='all' />
+    <link rel='stylesheet' href='css/shop.css' type='text/css' media='all' />
+    <script type='text/javascript' src='js/jquery.js'></script>
+    <script type='text/javascript' src='js/jquery-migrate.min.js'></script>
+    <link rel='stylesheet' href='tuner/style.css' type='text/css' media='all' />
+    <link rel="icon" href="img/cropped-favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" href="img/cropped-favicon-192x192.png" sizes="192x192" />
+    <link rel="apple-touch-icon-precomposed" href="img/cropped-favicon-180x180.png">
+    <meta name="msapplication-TileImage" content="img/cropped-favicon-270x270.png">
+
+    <title>Chestionar 1</title>
+  
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+  
+    var quiztitle = "Quiz Title";
+
+    /**
+    * Set the information about your questions here. The correct answer string needs to match
+    * the correct choice exactly, as it does string matching. (case sensitive)
+    *
+    */
+    var quiz = [
+        {
+            "question"      :   "Q1:Care este mai greu, un kilogram de pene sau un kilogram de plumb?",
+            "image"         :   "balanta.png.",
+            "choices"       :   [
+                                    "penele",
+                                    "plumbul",
+                                    "aurul",
+                                    "niciuna"
+                                ],
+            "correct"       :   "plumbul",
+            "explanation"   :   "Albert Einstein drafted the special theory of relativity in 1905.",
+        },
+        {
+            "question"      :   "Q2: Ce culoare are cerul la amiaza?",
+            "image"         :   "cer.jpg",
+            "choices"       :   [
+                                    "rosu",
+                                    "portocaliu",
+                                    "alabstru",
+                                    "roz"
+                                ],
+            "correct"       :   "portocaliu",
+            "explanation"   :   "The two dollar bill is seldom seen in circulation. As a result, some businesses are confused when presented with the note.",
+        },
+        {
+            "question"      :   "Q3: What event began on April 12, 1861?",
+            "image"         :   "",
+            "choices"       :   [
+                                    "First manned flight",
+                                    "California became a state",
+                                    "American Civil War began",
+                                    "Declaration of Independence"
+                                ],
+            "correct"       :   "American Civil War began",
+            "explanation"   :   "South Carolina came under attack when Confederate soldiers attacked Fort Sumter. The war lasted until April 9th 1865.",
+        },
+
+    ];
+
+
+    /******* No need to edit below this line *********/
+    var currentquestion = 0, score = 0, submt=true, picked;
+
+    jQuery(document).ready(function($){
+
+        /**
+         * HTML Encoding function for alt tags and attributes to prevent messy
+         * data appearing inside tag attributes.
+         */
+        function htmlEncode(value){
+          return $(document.createElement('div')).text(value).html();
+        }
+
+        /**
+         * This will add the individual choices for each question to the ul#choice-block
+         *
+         * @param {choices} array The choices from each question
+         */
+        function addChoices(choices){
+            if(typeof choices !== "undefined" && $.type(choices) == "array"){
+                $('#choice-block').empty();
+                for(var i=0;i<choices.length; i++){
+                    $(document.createElement('li')).addClass('choice choice-box').attr('data-index', i).text(choices[i]).appendTo('#choice-block');                    
+                }
+            }
+        }
+        
+        /**
+         * Resets all of the fields to prepare for next question
+         */
+        function nextQuestion(){
+            submt = true;
+            $('#explanation').empty();
+            $('#question').text(quiz[currentquestion]['question']);
+            $('#pager').text('Question ' + Number(currentquestion + 1) + ' of ' + quiz.length);
+            if(quiz[currentquestion].hasOwnProperty('image') && quiz[currentquestion]['image'] != ""){
+                if($('#question-image').length == 0){
+                    $(document.createElement('img')).addClass('question-image').attr('id', 'question-image').attr('src', quiz[currentquestion]['image']).attr('alt', htmlEncode(quiz[currentquestion]['question'])).insertAfter('#question');
+                } else {
+                    $('#question-image').attr('src', quiz[currentquestion]['image']).attr('alt', htmlEncode(quiz[currentquestion]['question']));
+                }
+            } else {
+                $('#question-image').remove();
+            }
+            addChoices(quiz[currentquestion]['choices']);
+            setupButtons();
+        }
+
+        /**
+         * After a selection is submitted, checks if its the right answer
+         *
+         * @param {choice} number The li zero-based index of the choice picked
+         */
+        function processQuestion(choice){
+            if(quiz[currentquestion]['choices'][choice] == quiz[currentquestion]['correct']){
+                $('.choice').eq(choice).css({'background-color':'#50D943'});
+                $('#explanation').html('<strong>Correct!</strong> ' + htmlEncode(quiz[currentquestion]['explanation']));
+                score++;
+            } else {
+                $('.choice').eq(choice).css({'background-color':'#D92623'});
+                $('#explanation').html('<strong>Incorrect.</strong> ' + htmlEncode(quiz[currentquestion]['explanation']));
+            }
+            currentquestion++;
+            $('#submitbutton').html('NEXT QUESTION &raquo;').on('click', function(){
+                if(currentquestion == quiz.length){
+                    endQuiz();
+                } else {
+                    $(this).text('Check Answer').css({'color':'#222'}).off('click');
+                    nextQuestion();
+                }
+            })
+        }
+
+        /**
+         * Sets up the event listeners for each button.
+         */
+        function setupButtons(){
+            $('.choice').on('mouseover', function(){
+                $(this).css({'background-color':'#e1e1e1'});
+            });
+            $('.choice').on('mouseout', function(){
+                $(this).css({'background-color':'#fff'});
+            })
+            $('.choice').on('click', function(){
+                picked = $(this).attr('data-index');
+                $('.choice').removeAttr('style').off('mouseout mouseover');
+                $(this).css({'border-color':'#222','font-weight':700,'background-color':'#c1c1c1'});
+                if(submt){
+                    submt=false;
+                    $('#submitbutton').css({'color':'#000'}).on('click', function(){
+                        $('.choice').off('click');
+                        $(this).off('click');
+                        processQuestion(picked);
+                    });
+                }
+            })
+        }
+        
+        /**
+         * Quiz ends, display a message.
+         */
+        function endQuiz(){
+            $('#explanation').empty();
+            $('#question').empty();
+            $('#choice-block').empty();
+            $('#submitbutton').remove();
+            $('#question').text("You got " + score + " out of " + quiz.length + " correct.");
+            $(document.createElement('h2')).css({'text-align':'center', 'font-size':'4em'}).text(Math.round(score/quiz.length * 100) + '%').insertAfter('#question');
+        }
+
+        /**
+         * Runs the first time and creates all of the elements for the quiz
+         */
+        function init(){
+            //add title
+            if(typeof quiztitle !== "undefined" && $.type(quiztitle) === "string"){
+                $(document.createElement('h1')).text(quiztitle).appendTo('#frame');
+            } else {
+                $(document.createElement('h1')).text("Quiz").appendTo('#frame');
+            }
+
+            //add pager and questions
+            if(typeof quiz !== "undefined" && $.type(quiz) === "array"){
+                //add pager
+                $(document.createElement('p')).addClass('pager').attr('id','pager').text('Question 1 of ' + quiz.length).appendTo('#frame');
+                //add first question
+                $(document.createElement('h2')).addClass('question').attr('id', 'question').text(quiz[0]['question']).appendTo('#frame');
+                //add image if present
+                if(quiz[0].hasOwnProperty('image') && quiz[0]['image'] != ""){
+                    $(document.createElement('img')).addClass('question-image').attr('id', 'question-image').attr('src', quiz[0]['image']).attr('alt', htmlEncode(quiz[0]['question'])).appendTo('#frame');
+                }
+                $(document.createElement('p')).addClass('explanation').attr('id','explanation').html('&nbsp;').appendTo('#frame');
+            
+                //questions holder
+                $(document.createElement('ul')).attr('id', 'choice-block').appendTo('#frame');
+            
+                //add choices
+                addChoices(quiz[0]['choices']);
+            
+                //add submit button
+                $(document.createElement('div')).addClass('choice-box').attr('id', 'submitbutton').text('Check Answer').css({'font-weight':700,'color':'#222','padding':'30px 0'}).appendTo('#frame');
+            
+                setupButtons();
+            }
+        }
+        
+        init();
+    });
+    </script>
+    <style type="text/css" media="all">
+        /*css reset */
+        html,body,div,span,h1,h2,h3,h4,h5,h6,p,code,small,strike,strong,sub,sup,b,u,i{border:0;font-size:100%;font:inherit;vertical-align:baseline;margin:0;padding:0;} 
+        article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block;} 
+        body{line-height:1; font:normal 0.9em/1em "Helvetica Neue", Helvetica, Arial, sans-serif;} 
+        ol,ul{list-style:none;}
+        strong{font-weight:700;}
+        #frame{max-width:800px;width:auto;border:0.3px solid #ccc;background:#fff;padding:30px;margin:3px;}
+        h1{font:normal bold 2em/1.8em "Helvetica Neue", Helvetica, Arial, sans-serif;text-align:left;border-bottom:1px solid #999;padding:0;width:auto}
+        h2{font:italic bold 1.3em/1.2em "Helvetica Neue", Helvetica, Arial, sans-serif;padding:0;text-align:center;margin:20px 0;}
+        p.pager{margin:5px 0 5px; font:bold 1em/1em "Helvetica Neue", Helvetica, Arial, sans-serif;color:#999;}
+        img.question-image{display:block;max-width:250px;margin:10px auto;border:1px solid #ccc;width:200%;height:auto;}
+        #choice-block{display:block;list-style:none;margin:0;padding:0;}
+        #submitbutton{background:#5a6b8c;}
+        #submitbutton:hover{background:#7b8da6;}
+        #explanation{margin:0 auto;padding:20px;width:75%;}
+        .choice-box{display:block;text-align:center;margin:8px auto;padding:10px 0;border:1px solid #666;cursor:pointer;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;}
+    </style>
+</head>
+
+    <body class="page wide wave-style">
+
+    <div class="page">
+        <!-- top panel -->
+        <div class='site_top_panel wave slider'>
+            <div class='top_half_sin_wrapper'>
+                <canvas class='top_half_sin' data-bg-color='#ffffff' data-line-color='#ffffff'></canvas>
+            </div>
+            <div class='container'>
+                <div class='row_text_search'>
+                    <div id='top_panel_text'><a href="tel:1-800-123-45678"><i class="fa fa-phone-square"></i> </a>;
+                        <a href="mailto:mail@mail.com"> <i class="fa fa-envelope-o"></i></a>
+                    </div>
+                    <form method="get" class="search-form" action="#">
+                        <label>
+                            <span class="screen-reader-text">Cauta:</span>
+                            <input type="text" class="search-field vova" value="" name="s" title="Search for:" />
+                        </label>
+                        <input type="submit" class="search-submit" value="Search" />
+                        <input type='hidden' name='lang' value='en' />
+                    </form>
+                </div>
+                <div id='top_panel_links'>
+                    <div class='search_icon'></div>
+                    <div id='top_social_links_wrapper'>
+                        <div class='share-toggle-button'><i class='share-icon fa fa-share-alt'></i></div>
+                        <div class='cws_social_links'><a href='http://twitter.com/' class='cws_social_link' title='Twitter'><i class='share-icon fa fa-twitter'></i></a><a href='http://facebook.com/' class='cws_social_link' title='Facebook'><i class='share-icon fa fa-facebook'></i></a><a href='http://dribbble.com/' class='cws_social_link' title='Dribbble'><i class='share-icon fa fa-dribbble'></i></a><a href='https://plus.google.com/' class='cws_social_link' title='Google'><i class='share-icon fa fa-google-plus'></i></a></div>
+                    </div>
+                    <div class='mini-cart'> <a class="woo_icon" href="features-shop-cart.html" title="View your shopping cart"><i class='woo_mini-count fa fa-shopping-cart'><span>2</span></i></a>
+                        <div class="woo_mini_cart">
+                            <!-- start product list -->
+                            <ul class="cart_list product_list_widget">
+                                <li>
+                                    <a href="#" class="remove" title="Remove this item">×</a>
+                                    <a href="shop-single-product.html">
+                                        <img width="180" height="180" src="pic/shop/58x58-bag.jpg" class="attachment-shop_thumbnail" alt="poster_2_up">Bag&nbsp; </a>
+                                    <span class="quantity">1 × <span class="amount">£12.00</span></span>
+                                </li>
+                                <li>
+                                    <a href="#" class="remove" title="Remove this item">×</a>
+                                    <a href="shop-single-product.html">
+                                        <img width="180" height="180" src="pic/shop/58x58-basket.jpg" class="attachment-shop_thumbnail" alt="T_7_front">Basket&nbsp; </a>
+                                    <span class="quantity">1 × <span class="amount">£18.00</span></span>
+                                </li>
+                            </ul>
+                            <!-- end product list -->
+                            <p class="total"><strong>Subtotal:</strong> <span class="amount">£30.00</span></p>
+                            <p class="buttons">
+                                <a href="features-shop-cart.html" class="button wc-forward">View Cart</a>
+                                <a href="features-shop-checkout.html" class="button checkout wc-forward">Checkout</a>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="lang_bar">
+                        <div>
+                            <ul>
+                                <li>
+                                    <a href="#" class="lang_sel_sel icl-en"><img class="iclflag" src="img/en.png" alt="en" title="English" /> &nbsp;English
+                                    </a>
+                                    <ul>
+                                        <li class="icl-fr">
+                                            <a href="#"><img class="iclflag" src="img/fr.png" alt="fr" title="Français" />&nbsp;Français</a>
+                                        </li>
+                                        <li class="icl-de">
+                                            <a href="#"><img class="iclflag" src="img/de.png" alt="de" title="Deutsch" />&nbsp;Deutsch</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="site_top_panel_toggle"></div>
+            </div>
+        </div>
+        <!-- / top panel -->
+        <!-- header container -->
+        <div class='header_cont'>
+            <div class='header_mask'>
+                <div class='header_pattern'></div>
+                <div class='header_img'></div>
+            </div>
+            <header class='site_header logo-in-menu' data-menu-after="3">
+                <div class="header_box">
+                    <div class="container">
+                        <!-- logo -->
+                        <div class="header_logo_part with_border" role="banner">
+                            <a class="logo" href="index-2.html"><img src='img/logo.png' data-at2x='img/logo.png' alt /></a>
+                        </div>
+                        <!-- / logo -->
+                        <!-- menu -->
+                        <div class="header_nav_part">
+                            <nav class="main-nav-container a-right">
+                                <div class="mobile_menu_header">
+                                    <i class="mobile_menu_switcher"><span></span><span></span><span></span></i>
+                                </div>
+                                <ul id="menu-main-menu" class="main-menu menu-bees">
+                                    <!-- menu item -->
+                                    <li class="menu-item menu-item-has-children bees-start">
+                                        <a href="index-2.html">
+                                            <div class="bees bees-start"><span></span>
+                                                <div class="line-one"></div>
+                                                <div class="line-two"></div>
+                                            </div>Home
+                                            <div class="canvas_wrapper">
+                                                <canvas class="menu_dashed"></canvas>
+                                            </div>
+                                        </a>
+                                        <span class='button_open'></span>
+                                        <ul class="sub-menu">
+                                            <li class="menu-item back"><a href="#"><em>←</em>&nbsp;BACK</a>
+                                            </li>
+                                            <li class="menu-item"><a href="index-2.html">Learn&#038;Play</a></li>
+                                            <li class="menu-item"><a href="babysitter.html">Babysitter</a></li>
+                                            <li class="menu-item"><a href="store.html">Store</a></li>
+                                        </ul>
+                                    </li>
+                                    <!-- / menu item -->
+                                    <!-- menu item -->
+                                   <div class="header_nav_part">
+                                <nav class="main-nav-container a-right">
+                                    <div class="mobile_menu_header">
+                                        <i class="mobile_menu_switcher"><span></span><span></span><span></span></i>
+                                    </div>
+                                    <ul id="menu-main-menu" class="main-menu menu-bees">
+                                        <!-- menu item -->
+                                        <li class="menu-item current-menu-item page_item current_page_item current-menu-ancestor current-menu-parent current_page_parent current_page_ancestor menu-item-has-children bees-start">
+                                            <a href="index-2.html">
+                                                <div class="bees bees-start"><span></span>
+                                                    <div class="line-one"></div>
+                                                    <div class="line-two"></div>
+                                                </div>Home
+                                                <div class="canvas_wrapper">
+                                                    <canvas class="menu_dashed"></canvas>
+                                                </div>
+                                            </a>
+                                            <span class='button_open'></span>
+                                            
+                                        </li>
+                                        <!-- / menu item -->
+                                        <!-- menu item -->
+                                        <li class="menu-item menu-item-has-children"><a href="features-benefits.html">Jocuri<div class="canvas_wrapper"><canvas class="menu_dashed"></canvas></div></a>
+                                            <span class='button_open'></span>
+                                            <ul class="sub-menu">
+                                                <li class="menu-item back"><a href="#"><em>←</em>&nbsp;BACK</a>
+                                                </li>
+                                                <li class="menu-item"><a href="features-benefits.html">Jocuri cu masini</a></li>
+                                                <li class="menu-item"><a href="features-shop-ready.html">Jocuri cu animale</a></li>
+                                                <li class="menu-item"><a href="features-content-elements.html">Jocuri diverse</a></li>
+                                                
+                                                    <span class='button_open'></span>
+                                                    <ul class="sub-menu">
+                                                        <li class="menu-item back"><a href="#"><em>←</em>&nbsp;BACK</a>
+                                                        </li>
+                                                        <li class="menu-item"><a href="features-shop.html">Shop</a></li>
+                                                        <li class="menu-item"><a href="features-shop-cart.html">Cart</a></li>
+                                                        <li class="menu-item"><a href="features-shop-checkout.html">Checkout</a></li>
+                                                        <li class="menu-item"><a href="features-my-account.html">My Account</a></li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                        <!-- / menu item -->
+                                        <!-- menu item -->
+                                        <li class="menu-item menu-item-has-children"><a href="page-about-us.html">Stiati ca?<div class="canvas_wrapper"><canvas class="menu_dashed"></canvas></div></a>
+                                            <span class='button_open'></span>
+                                            <ul class="sub-menu">
+                                                <li class="menu-item back"><a href="#"><em>←</em>&nbsp;BACK</a>
+                                                </li>
+                                                <li class="menu-item"><a href="page-about-us.html">Animale</a></li>
+                                                <li class="menu-item"><a href="page-services-2.html">Stiinta</a></li>
+                                               
+                                                <li class="menu-item menu-item-type-custom menu-item-object-custom"><a href="page-404.html">404 Page</a></li>
+                                            </ul>
+                                        </li>
+                                        <!-- / menu item -->
+                                        <!-- menu item -->
+                                        <li class="menu-item menu-item-has-children right"><a href="portfolio-four-columns.html">Chestionare<div class="canvas_wrapper"><canvas class="menu_dashed"></canvas></div></a>
+                                            <span class='button_open'></span>
+                                            <ul class="sub-menu">
+                                                <li class="menu-item back"><a href="#"><em>←</em>&nbsp;BACK</a>
+                                                </li>
+                                              <li class="menu-item"><a href="c1 - Storyline output\story.html">Test 1</a></li>
+                                                <li class="menu-item"><a href="c2 - Storyline output\story.html">Test 2</a></li>
+                                                
+                                                
+                                            </ul>
+                                        </li>
+                                        <!-- / menu item -->
+                                        <!-- menu item -->
+                                        <li class="menu-item menu-item-has-children right"><a href="blog-right-sidebar.html">Blog<div class="canvas_wrapper"><canvas class="menu_dashed"></canvas></div></a>
+                                            <span class='button_open'></span>
+                                            <ul class="sub-menu">
+                                                <li class="menu-item back"><a href="#"><em>←</em>&nbsp;BACK</a>
+                                                </li>
+                                                <li class="menu-item menu-item-has-children"><a href="blog-one-column.html">Columns</a>
+                                                    <span class='button_open'></span>
+                                                    <ul class="sub-menu">
+                                                        <li class="menu-item back"><a href="#"><em>←</em>&nbsp;BACK</a>
+                                                        </li>
+                                                        <li class="menu-item"><a href="blog-one-column.html">One Column</a></li>
+                                                        <li class="menu-item"><a href="blog-two-columns.html">Two Columns</a></li>
+                                                        <li class="menu-item"><a href="blog-three-columns.html">Three Columns</a></li>
+                                                    </ul>
+                                                </li>
+                                                <li class="menu-item menu-item-has-children"><a href="blog-right-sidebar.html">With Sidebar</a>
+                                                    <span class='button_open'></span>
+                                                    <ul class="sub-menu">
+                                                        <li class="menu-item back"><a href="#"><em>←</em>&nbsp;BACK</a>
+                                                        </li>
+                                                        <li class="menu-item"><a href="blog-left-sidebar.html">Left Sidebar</a></li>
+                                                        <li class="menu-item"><a href="blog-right-sidebar.html">Right Sidebar</a></li>
+                                                        <li class="menu-item"><a href="blog-double-sidebars.html">Double Sidebars</a></li>
+                                                    </ul>
+                                                </li>
+                                                <li class="menu-item"><a href="blog-larg-images.html">Large Images</a></li>
+                                                <li class="menu-item"><a href="blog-medium-images.html">Medium Images</a></li>
+                                                <li class="menu-item"><a href="blog-small-images.html">Small Images</a></li>
+                                            </ul>
+                                        </li>
+                                        <!-- / menu item -->
+                                        <!-- menu item -->
+                                        <li class="menu-item right bees-end">
+                                            <a href="contact-us.html">
+                                                <div class="bees bees-end"><span></span>
+                                                    <div class="line-one"></div>
+                                                    <div class="line-two"></div>
+                                                </div>Contact
+                                                <div class="canvas_wrapper">
+                                                    <canvas class="menu_dashed"></canvas>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <!-- / menu item -->
+                                    </ul>
+                                </nav>
+                            </div>
+                            <!-- / menu -->
+                        </div>
+                    </div>
+                </header>
+            <!-- #masthead -->
+        </div>
+        <!-- breadcrumbs -->
+        <section class='page_title wave'>
+            <div class='container'>
+                <div class='title'>
+                    <h1>Chestionare </h1></div>
+                <nav class="bread-crumbs"><a href="index-2.html" >Acasa</a><i class="delimiter fa fa-chevron-right"></i><span class="current">Chestionare</span></nav>
+                <!-- .breadcrumbs -->
+            </div>
+            <canvas class='breadcrumbs' data-bg-color='#f8f2dc' data-line-color='#f9e8b2'></canvas>
+        </section>
+
+
+
+ <div id="main" class="site-main">
+            <div class="page_content">
+                <!-- pattern container / -->
+                <div class='left-pattern pattern pattern-2'></div>
+                <main>
+                    <!-- content section -->
+                    
+                    <div class='grid_row clearfix'>
+                        <div class='grid_col grid_col_2'>
+
+                    </div>
+                        <div class='grid_col grid_col_6'>
+                            <div class='ce clearfix'>
+                                
+
+                                <!-- FRAME pentru QUIZ-->
+                                  <div id="frame" role="content"></div>  
+
+                                    <p>&nbsp;</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- accordion -->
+                        <div class='grid_col grid_col_4'>
+                           
+                    </div>
+                   
+                </main>
+                <!-- pattern section / -->
+                <div class='right-pattern pattern pattern-2'></div>
+                <!-- footer container image / -->
+                <div class="footer_image"></div>
+            </div>
+            <!-- svg filter -->
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="0" style='display:none;'>
+                <defs>
+                    <filter id="goo">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
+                        <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+                        <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+                    </filter>
+                </defs>
+            </svg>
+            <!-- / svg filter -->
+        </div>
+
+
+        <!-- breadcrumbs / -->
+        <!-- main container -->
+    
+        <!-- #main -->
+        <!-- footer -->
+        <div class='footer_wrapper_copyright'>
+            <!-- canvas -->
+            <div class='half_sin_wrapper'>
+                <canvas class='half_sin' data-bg-color='23,108,129' data-line-color='23,108,129'></canvas>
+            </div>
+            <!-- / canvas -->
+            <footer class='page_footer'>
+                <div class='container'>
+                    <div class='footer_container'>
+                        <!-- widget post -->
+                        <div class="cws-widget">
+                            <div class="widget-title">Jocuri noi</div>
+                            <div class='widget_carousel'>
+                                <div class='item'>
+                                    <!-- post item -->
+                                    <div class='post_item'>
+                                        <div class='post_preview clearfix'>
+                                            <a href='blog-post.html' class='post_thumb_wrapp pic'><img class='post_thumb' src='pic/bfi_thumb/58x58-portfolio_7-304vqm0b4ukllinncov4ei.jpg' data-at2x='pic/bfi_thumb/58x58-portfolio_7-304vqm0b4ukllinncov4ei@2x.jpg' alt />
+                                                <div class='hover-effect'></div>
+                                                <div class='links'><span class='fa fa-link'></span></div>
+                                            </a>
+                                            <div class='post_title'><a href='blog-post.html'>Morbi iaculis</a></div>
+                                            <div class='post_content'>Quisque in nulla ut metus <a href='blog-post.html'>...</a></div>
+                                            <div class='post_date'>March 24, 2015</div>
+                                        </div>
+                                    </div>
+                                    <!-- / post item -->
+                                    <!-- post item -->
+                                    <div class='post_item'>
+                                        <div class='post_preview clearfix'>
+                                            <a href='blog-post.html' class='post_thumb_wrapp pic'><img class='post_thumb' src='pic/bfi_thumb/58x58-blog_3_col_3-304vqj49s4b9oehlhrm1hm.jpg' data-at2x='pic/bfi_thumb/58x58-blog_3_col_3-304vqj49s4b9oehlhrm1hm@2x.jpg' alt />
+                                                <div class='hover-effect'></div>
+                                                <div class='links'><span class='fa fa-link'></span></div>
+                                            </a>
+                                            <div class='post_title'><a href='blog-post.html'>Praesent sagittis</a></div>
+                                            <div class='post_content'>Maecenas vel elit at dui <a href='blog-post.html'>...</a></div>
+                                            <div class='post_date'>March 24, 2015</div>
+                                        </div>
+                                    </div>
+                                    <!-- / post item -->
+                                    <!-- post item -->
+                                    <div class='post_item'>
+                                        <div class='post_preview clearfix'>
+                                            <a href='blog-post.html' class='post_thumb_wrapp pic'><img class='post_thumb' src='pic/bfi_thumb/58x58-portfolio_4-304vqkvlk7rwl2xsvw77yi.jpg' data-at2x='pic/bfi_thumb/58x58-portfolio_4-304vqkvlk7rwl2xsvw77yi@2x.jpg' alt />
+                                                <div class='hover-effect'></div>
+                                                <div class='links'><span class='fa fa-link'></span></div>
+                                            </a>
+                                            <div class='post_title'><a href='blog-post.html'>Morbi iaculis euismod</a></div>
+                                            <div class='post_content'>Aenean molestie faucibus <a href='blog-post.html'>...</a></div>
+                                            <div class='post_date'>March 22, 2015</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='item'>
+                                    <!-- post item -->
+                                    <div class='post_item'>
+                                        <div class='post_preview clearfix'>
+                                            <div class='post_title'><a href='blog-post.html'>Gallery post</a></div>
+                                            <div class='post_content'>Quisque in nulla ut metus <a href='blog-post.html'>...</a></div>
+                                            <div class='post_date'>March 20, 2015</div>
+                                        </div>
+                                    </div>
+                                    <!-- / post item -->
+                                    <!-- post item -->
+                                    <div class='post_item'>
+                                        <div class='post_preview clearfix'>
+                                            <a href='blog-post.html' class='post_thumb_wrapp pic'><img class='post_thumb' src='pic\bfi_thumb\348x348-portfolio_3-304vqkmkcmqbp3dcgygufe.jpg' data-at2x='pic\bfi_thumb\348x348-portfolio_3-304vqkmkcmqbp3dcgygufe.jpg' alt />
+                                                <div class='hover-effect'></div>
+                                                <div class='links'><span class='fa fa-link'></span></div>
+                                            </a>
+                                            <div class='post_title'><a href='blog-post.html'>Ut wisi enim</a></div>
+                                            <div class='post_content'>Aenean molestie faucibus <a href='blog-post.html'>...</a></div>
+                                            <div class='post_date'>February 28, 2015</div>
+                                        </div>
+                                    </div>
+                                    <!-- / post item -->
+                                    <!-- post item -->
+                                    <div class='post_item'>
+                                        <div class='post_preview clearfix'>
+                                            <a href='blog-post.html' class='post_thumb_wrapp pic'><img class='post_thumb' src='pic/bfi_thumb/58x58-blog_3_col_1-304vqguumupvnj1wk6a8lm.jpg' data-at2x='pic/bfi_thumb/58x58-blog_3_col_1-304vqguumupvnj1wk6a8lm@2x.jpg' alt />
+                                                <div class='hover-effect'></div>
+                                                <div class='links'><span class='fa fa-link'></span></div>
+                                            </a>
+                                            <div class='post_title'><a href='blog-post.html'>Image post</a></div>
+                                            <div class='post_content'>Quisque in nulla ut metus <a href='blog-post.html'>...</a></div>
+                                            <div class='post_date'>February 25, 2015</div>
+                                        </div>
+                                    </div>
+                                    <!-- / post item -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- / widget post -->
+                        <!-- twitter -->
+                        <div class="cws-widget">
+                            <div class="widget-title"></div>
+                            <div class='cws_tweets tweets_carousel paginated'>
+                                <div class='twitter-carousel cws_tweet'></div>
+                            </div>
+                        </div>
+                        <!-- / twitter -->
+                        <!-- widget gallery -->
+                        <div class="cws-widget">
+                            <div class="widget-title">Poze</div>
+                            <div class='cws_textwidget_content'>
+                                <div class='text'>
+                                    <div id='gallery-2' class='gallery galleryid-2288 gallery-columns-3 gallery-size-thumbnail'>
+                                        <!-- gallery item -->
+                                        <div class='gallery-item'>
+                                            <div class='gallery-icon landscape'>
+                                                <img width="150" height="150" src="pic\bfi_thumb\348x348-portfolio_3-304vqkmkcmqbp3dcgygufe.jpg" class="attachment-thumbnail" alt="blog_3_col_2" />
+                                            </div>
+                                        </div>
+                                        <!-- / galery item -->
+                                        <!-- galery item -->
+                                        <div class='gallery-item'>
+                                            <div class='gallery-icon landscape'>
+                                                <img width="150" height="150" src="pic\bfi_thumb\348x348-portfolio_3-304vqkmkcmqbp3dcgygufe.jpg" class="attachment-thumbnail" alt="blog_3_col_1" />
+                                            </div>
+                                        </div>
+                                        <!-- / galery item -->
+                                        <!-- galery item -->
+                                        <div class='gallery-item'>
+                                            <div class='gallery-icon landscape'>
+                                                <img width="150" height="150" src="pic\bfi_thumb\348x348-portfolio_3-304vqkmkcmqbp3dcgygufe.jpg" class="attachment-thumbnail" alt="pic_double_sidebar_1" />
+                                            </div>
+                                        </div>
+                                        <br style="clear: both" />
+                                        <div class='gallery-item'>
+                                            <div class='gallery-icon landscape'>
+                                                <img width="150" height="150" src="pic\bfi_thumb\348x348-portfolio_3-304vqkmkcmqbp3dcgygufe.jpg" class="attachment-thumbnail" alt="pic_typorgaphy" />
+                                            </div>
+                                        </div>
+                                        <!-- / galery item -->
+                                        <!-- galery item -->
+                                        <div class='gallery-item'>
+                                            <div class='gallery-icon landscape'>
+                                                <img width="150" height="150" src="pic\bfi_thumb\348x348-portfolio_3-304vqkmkcmqbp3dcgygufe.jpg" class="attachment-thumbnail" alt="portfolio_3" />
+                                            </div>
+                                        </div>
+                                        <!-- / galery item -->
+                                        <!-- galery item -->
+                                        <div class='gallery-item'>
+                                            <div class='gallery-icon landscape'>
+                                                <img width="150" height="150" src="pic\bfi_thumb\348x348-portfolio_3-304vqkmkcmqbp3dcgygufe.jpg" class="attachment-thumbnail" alt="portfolio_6" />
+                                            </div>
+                                        </div>
+                                        <br style="clear: both" />
+                                        <div class='gallery-item'>
+                                            <div class='gallery-icon landscape'>
+                                                <img width="150" height="150" src="pic\bfi_thumb\348x348-portfolio_3-304vqkmkcmqbp3dcgygufe.jpg" class="attachment-thumbnail" alt="portfolio_4" />
+                                            </div>
+                                        </div>
+                                        <!-- / galery item -->
+                                        <!-- galery item -->
+                                        <div class='gallery-item'>
+                                            <div class='gallery-icon landscape'>
+                                                <img width="150" height="150" src="pic\bfi_thumb\348x348-portfolio_3-304vqkmkcmqbp3dcgygufe.jpg" class="attachment-thumbnail" alt="portfolio_7" />
+                                            </div>
+                                        </div>
+                                        <!-- / galery item -->
+                                        <!-- galery item -->
+                                        <div class='gallery-item'>
+                                            <div class='gallery-icon'>
+                                                <img width="1" height="1" src="pic\bfi_thumb\348x348-portfolio_3-304vqkmkcmqbp3dcgygufe.jpg" class="attachment-thumbnail" alt="blog_3_col_3" />
+                                            </div>
+                                        </div>
+                                        <!-- / gallery item -->
+                                        <br style="clear: both" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- / widget gallery -->
+                        <!-- conatact form -->
+                        <div class="cws-widget">
+                            <div class="widget-title">Lasa un mesaj</div>
+                            <div class="textwidget">
+                                <div role="form" class="cf" id="cf-f1705-o1" lang="en-US" dir="ltr">
+                                    <!-- <div class="screen-reader-response"></div> -->
+                                    <form action="http://html.cwsthemes.com/kiddy/php/contacts-process.php" method="post" class="cf-form contact-form" novalidate="novalidate">
+                                        <p><span class="cf-form-control-wrap your-name"><input type="text" name="name" value="" size="60" class="" aria-required="true" aria-invalid="false" placeholder="Nume" /></span></p>
+                                        <p><span class="cf-form-control-wrap your-email"><input type="email" name="email" value="" size="60" class="" aria-required="true" aria-invalid="false" placeholder="E-mail" /></span></p>
+                                        <p><span class="cf-form-control-wrap your-message"><textarea name="message" cols="39" rows="6" class="" aria-invalid="false" placeholder="Mesaj"></textarea></span></p>
+                                        <p>
+                                            <input type="submit" value="Send" class="cf-form-control cf-submit" />
+                                        </p>
+                                    </form>
+                                    <div class="email_server_responce"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- / contact form -->
+                    </div>
+                </div>
+            </footer>
+            <!-- copyright -->
+            <div class='copyrights_area'>
+                <!-- canvas -->
+                <div class='half_sin_wrapper'>
+                    <canvas class='footer_half_sin' data-bg-color='14,64,77' data-line-color='14,64,77'></canvas>
+                </div>
+                <!-- / canvas -->
+                <!-- copyright -->
+                <div class='container'>
+                    <div class='copyrights_container'>
+                        <div class='copyrights'><a target="_blank" href="http://www.templatespoint.net">TemplatesPoint</a></div>
+                        <div class='copyrights_panel'>
+                            <div class='copyrights_panel_wrapper'>
+                                <div class="lang_bar">
+                                    <div>
+                                        <ul>
+                                            <li>
+                                                <a href="#" class="lang_sel_sel icl-en"><img class="iclflag" src="img/en.png" alt="en" title="English" /> &nbsp;English
+                                                </a>
+                                                <ul>
+                                                    <li class="icl-fr">
+                                                        <a href="#"><img class="iclflag" src="img/fr.png" alt="fr" title="Français" />&nbsp;Français</a>
+                                                    </li>
+                                                    <li class="icl-de">
+                                                        <a href="#"><img class="iclflag" src="img/de.png" alt="de" title="Deutsch" />&nbsp;Deutsch</a>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class='cws_social_links'><a href='http://twitter.com/' class='cws_social_link' title='Twitter'><i class='share-icon fa fa-twitter'></i></a><a href='http://facebook.com/' class='cws_social_link' title='Facebook'><i class='share-icon fa fa-facebook'></i></a><a href='http://dribbble.com/' class='cws_social_link' title='Dribbble'><i class='share-icon fa fa-dribbble'></i></a><a href='https://plus.google.com/' class='cws_social_link' title='Google'><i class='share-icon fa fa-google-plus'></i></a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- / copyright -->
+            </div>
+        </div>
+    </div>
+    <!-- #page -->
+    <div class='scroll_top animated'></div>
+    <div id="lang_sel_footer">
+        <ul>
+            <li>
+                <a href="features-benefits.html" class="lang_sel_sel"><img src="img/en.png" alt="English" class="iclflag" title="English" />&nbsp;English</a>
+            </li>
+            <li>
+                <a href="#"><img src="img/fr.png" alt="Français" class="iclflag" title="Français" />&nbsp;Français</a>
+            </li>
+            <li>
+                <a href="#"><img src="img/de.png" alt="Deutsch" class="iclflag" title="Deutsch" />&nbsp;Deutsch</a>
+            </li>
+        </ul>
+    </div>
+    <script type='text/javascript' src='tuner/tuner/js/colorpicker.js'></script>
+    <script type='text/javascript' src='tuner/tuner/js/scripts.js'></script>
+    <script type='text/javascript' src='js/retina_1.3.0.js'></script>
+    <script type='text/javascript' src='js/modernizr.js'></script>
+    <script type='text/javascript' src='js/owl.carousel.js'></script>
+    <script type='text/javascript' src='js/TweenMax.min.js'></script>
+    <script type='text/javascript' src='js/jquery.isotope.min.js'></script>
+    <script type='text/javascript' src='js/jquery.fancybox.js'></script>
+    <script type='text/javascript' src='js/select2.min.js'></script>
+    <script type='text/javascript' src='js/wow.min.js'></script>
+    <script type='text/javascript' src='js/jquery.validate.min.js'></script>
+    <script type='text/javascript' src="js/jquery.form.min.js"></script>
+    <script type='text/javascript' src='js/scripts.js'></script>
+    <script type='text/javascript' src="js/jquery.tweet.js"></script>
+</body>
+
+
+</html>
